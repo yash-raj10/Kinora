@@ -1,14 +1,45 @@
-# Kinora
+<p align="center">
+  <img src="docs/assets/kinora-banner.png" alt="Kinora" width="560">
+</p>
 
-**Movie ratings backed by real stakes, plus box-office calls, on NEAR.**
+<h1 align="center">Put your taste on the line</h1>
 
-Built for the NEAR Hackathon. Tracks: **Social Money** and **Unstoppable DeFi**.
+<p align="center">
+  <b>Movie ratings backed by real stakes, plus box-office calls, on NEAR.</b>
+</p>
+
+<p align="center">
+  <a href="docs/PRODUCT_BRIEF.md">Product brief</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#run-it-locally">Run it locally</a> ·
+  Contract <code>kinora-yash-1114.testnet</code> on NEAR testnet
+</p>
+
+> **IMDb is broken. We're fixing it.** Bots and review-bombers decide too many scores. Kinora scores come from real people who've earned their taste.
 
 **Live demo:** _add the deployed link here_
-**Contract (NEAR testnet):** `kinora-yash-1114.testnet`
+Built for the **NEAR Hackathon**. Tracks: **Social Money** and **Unstoppable DeFi**.
 
-## What it is
-Kinora is a movie rating site where a rating costs something to give. You vote Skip, Timepass, Go for it or Perfection and back the vote with a small NEAR stake. Correct calls earn a share of the pool and climb a public leaderboard. You can also bet on a movie's US box office, either Over/Under on its gross or head-to-head between two releases. A scheduled keeper posts box-office readings and settles markets with no manual step.
+## What Kinora does
+- **Rate with a stake.** Vote Skip, Timepass, Go for it or Perfection and back the call with a small NEAR stake. Right calls win a share of the wrong side's stakes.
+- **Earn your weight.** The more you vote, the more your vote counts. Weight comes from voting history, never from stake size, so a big wallet can't buy a verdict.
+- **Build a public record.** Every correct call earns Taste Score and climbs the leaderboard, and 30 points earns the Critic badge.
+- **Call the box office.** Bet Over or Under on a movie's US gross, or pick which of two releases earns more. A keeper posts the data and settles markets on its own.
+
+### At a glance
+| | |
+|---|---|
+| Network | NEAR testnet |
+| Catalog | 25 recent theatrical releases |
+| Voting window | 10 days per movie |
+| Minimum stake | 0.1 NEAR |
+| Wrong-side slash | 20% |
+| Box-office clock | 3 days of betting, then a 7-day wait |
+| Keeper | Runs every 30 minutes |
+| Built with | Rust and near-sdk, Next.js, NEAR Connect, TMDB, OMDb, GitHub Actions |
+
+## Contents
+[Features](#features) · [How it works](#how-it-works) · [Architecture](#architecture) · [Run it locally](#run-it-locally) · [Repository layout](#repository-layout) · [Roadmap](#roadmap)
 
 ## Features
 - **Wallet sign-in** with NEAR Connect. Your wallet is your account.
@@ -97,13 +128,10 @@ flowchart LR
     S -.->|movies-meta.json| W
 ```
 
-- **Contract** (`contract/`, Rust with near-sdk): movies, votes, weights, verdicts, payouts, levels, the leaderboard, markets, bets and readings.
+- **Contract** (`contract/`, Rust with near-sdk): movies, votes, weights, verdicts, payouts, levels, the leaderboard, markets, bets, readings and comments.
 - **Website** (`frontend/`, Next.js): reads the contract live and sends the user's wallet transactions.
 - **Scripts** (`scripts/`, Node): catalog seeding, market creation, and the data agent.
 - **Keeper** (`.github/workflows/keeper.yml`): runs the agent on a schedule.
-
-## Tech stack
-Rust and near-sdk, Next.js and React, NEAR Connect for wallet sign-in, TMDB for catalog data, OMDb for box-office data, GitHub Actions for the keeper.
 
 ## Run it locally
 
@@ -153,7 +181,7 @@ docs/        product brief and video script
 ```
 
 ## Roadmap
-- More data sources weekend and weekly figures.
+- More data sources, including weekend and weekly figures.
 - Community vibe voting, so a movie's vibe comes from its voters.
 - Several independent resolvers with a dispute window.
 - More market types: weekend gross, gross brackets, and "will it pass its budget".
