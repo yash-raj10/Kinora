@@ -117,15 +117,17 @@ Day 0 [= betting =] Day 3 [======= waiting =======] Day 10  →  settle  →  cl
 ## Architecture
 ```mermaid
 flowchart LR
-    U[User with NEAR wallet] -->|vote, bet, claim| C[(Kinora contract<br/>kinora-yash-1114.testnet)]
+    U[User with NEAR wallet] -->|vote, bet, comment, claim| C[(Kinora contract<br/>kinora-yash-1114.testnet)]
     W[Next.js site] -->|read via RPC| C
     U --- W
     K[Keeper<br/>GitHub Actions, every 30 min] -->|post readings, resolve| C
     K -->|US gross| O[OMDb]
     K -->|id mapping| T[TMDB]
-    S[Seed scripts] -->|add movies| C
+    S[Seed and market scripts] -->|add movies, create markets| C
     S -->|catalog details| T
+    S -->|box-office check| O
     S -.->|movies-meta.json| W
+    T -.->|poster images| W
 ```
 
 - **Contract** (`contract/`, Rust with near-sdk): movies, votes, weights, verdicts, payouts, levels, the leaderboard, markets, bets, readings and comments.

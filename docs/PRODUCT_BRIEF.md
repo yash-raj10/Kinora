@@ -112,48 +112,6 @@ Same 10-day clock as Over/Under: **3 days of betting, a 7-day wait, settle on da
 ### How a threshold is chosen
 Each Over/Under market has one fixed threshold, set when it opens. It is a **round number just above the movie's current gross**, so the result is genuinely uncertain. For example, Primetime stands at $46.8M, so its market asks "Will it pass $50M?". The threshold doesn't move. On day 10 a single reading decides whether the gross is above or below it. A movie can have several thresholds at once, such as $50M, $60M and $75M, each as its own market.
 
-## Everything on the site
-- Wallet sign-in with a NEAR wallet
-- A catalog of 25 recent theatrical releases, with posters, genres, cast and overview
-- **Comments** on every movie, saved on the blockchain. Anyone with a wallet can write up to 280 characters
-- Search, filters and sorting on the home page, and a "most staked right now" feature
-- Stake-weighted Meter for each movie
-- Levels and vote weights
-- Slash payouts and refunds
-- Taste Score, Critic badge and leaderboard
-- A round **Vibe chart** of each movie's genre mix
-- Over/Under and head-to-head box-office markets
-- Box-office readings with source links and data fingerprints
-- Automatic settling by the keeper
-
-## Key numbers
-| | |
-|---|---|
-| Voting window | 10 days per movie |
-| Minimum stake | 0.1 NEAR |
-| Wrong-side slash | 20% |
-| Full refund if no verdict | after 7 days |
-| Points per correct call | 10 |
-| Critic badge | 30 points |
-| Vote weights | 1.0x, 1.25x, 1.5x, 2.0x |
-| Keeper schedule | every 30 minutes |
-| Network | NEAR |
-
-## Suggested 90-second video
-| Time | On screen | Voice-over |
-|---|---|---|
-| 0:00 | Home page, hero line "Ratings that cost something to fake" | "Movie ratings online are free to give, so they're easy to fake. Kinora changes that: every rating is backed by a real stake." |
-| 0:10 | Click Connect wallet | "Sign in with your own NEAR wallet. No account, no password." |
-| 0:18 | Open a movie, show the stake stacks | "Pick a verdict, Skip, Timepass, Go for it or Perfection, and back it with a small stake. The Meter shows where the crowd stands." |
-| 0:30 | Stake and vote, approve in the wallet | "Stakes are held by a smart contract, not by us." |
-| 0:38 | Level panel | "The more you vote, the more your vote weighs. Weight comes from your history, never your wallet." |
-| 0:46 | Finalized movie, Claim payout | "When voting closes, anyone can lock in the verdict. Call it right and you get your stake back plus a share of the slashed pool. Call it wrong and you lose twenty percent." |
-| 0:58 | Leaderboard | "Every correct call earns points and builds your rank. Reach thirty points and you're a Critic." |
-| 1:06 | Box office page, a head-to-head card | "You can also bet on the box office: over or under a US gross, or which of two releases earns more." |
-| 1:16 | Reading with source link and evidence | "Real numbers arrive on-chain with a link to the source and a fingerprint of the data." |
-| 1:24 | A market settling, Claim payout | "A keeper settles markets automatically. Winners just claim." |
-| 1:32 | Closing line | "Kinora. Put your taste on the line." |
-
 ## Where to find it
 - Code: https://github.com/yash-raj10/Kinora
 - Contract on NEAR testnet: `kinora-yash-1114.testnet`
