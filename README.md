@@ -18,7 +18,7 @@
 > **IMDb is broken. We're fixing it.** Bots and review-bombers decide too many scores. Kinora scores come from real people who've earned their taste.
 
 **Live demo:** [kinora-near.vercel.app](https://kinora-near.vercel.app/)
-Built for the **NEAR Hackathon**. Tracks: **Social Money** and **Unstoppable DeFi**.
+Built for the **NEAR Hackathon**. Tracks: **Social Money**, **Unstoppable DeFi** and **Open Innovation**.
 
 ## What Kinora does
 - **Rate with a stake.** Vote Skip, Timepass, Go for it or Perfection and back the call with a small NEAR stake. Right calls win a share of the wrong side's stakes.
