@@ -97,10 +97,13 @@ export default function Home() {
   return (
     <main>
       <section className="container intro">
-        <h1>Ratings that cost something to fake.</h1>
+        <h1>Put your <em>taste</em> on the line</h1>
         <p>
-          Call a movie Skip, Timepass, Go for it or Perfection and back it with a NEAR stake. Right calls
-          win a share of the wrong side&apos;s stakes, and seasoned voters count more, so a crowd can&apos;t be faked for free.
+          <strong className="intro-lead">
+            <mark>IMDb is broken. We&apos;re fixing it.</mark>
+          </strong>
+          Bots and review-bombers decide too many scores. Kinora scores come from real people who&apos;ve earned
+          their taste.
         </p>
       </section>
 
