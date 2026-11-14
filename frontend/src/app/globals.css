@@ -263,3 +263,8 @@ img { display: block; max-width: 100%; }
 .market-row img, .market-row .thumb { width: 64px; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 4px; background: var(--line); }
 .market-row h3 { font-size: 1.05rem; line-height: 1.3; }
 .market-row .note { margin-top: 2px; }
+
+.readings .who { color: var(--ink); font-weight: 600; }
+.market-row .thumbs { display: flex; gap: 6px; }
+.market-row .thumbs img, .market-row .thumbs .thumb { width: 52px; }
+.market-row { grid-template-columns: 112px 1fr; }

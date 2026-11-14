@@ -42,6 +42,7 @@ export default function MoviePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [preview, setPreview] = useState<ClaimPreview | null>(null);
   const [markets, setMarkets] = useState<MarketView[]>([]);
+  const [titles, setTitles] = useState<Record<number, string>>({});
   const [finalBucket, setFinalBucket] = useState<number | null>(null);
   const [settled, setSettled] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -56,14 +57,16 @@ export default function MoviePage() {
   const refresh = useCallback(async () => {
     setNowMs(Date.now());
     try {
-      const [m, mt, cfg, fin, allMarkets] = await Promise.all([
+      const [m, mt, cfg, fin, allMarkets, allMovies] = await Promise.all([
         viewFunction({ contractId: KinoraContract, method: 'get_movie', args: { movie_id: movieId } }) as Promise<Movie | null>,
         viewFunction({ contractId: KinoraContract, method: 'get_meter', args: { movie_id: movieId } }) as Promise<Meter>,
         viewFunction({ contractId: KinoraContract, method: 'get_config' }) as Promise<Config>,
         viewFunction({ contractId: KinoraContract, method: 'get_final', args: { movie_id: movieId } }) as Promise<number | null>,
         viewFunction({ contractId: KinoraContract, method: 'get_markets', args: { limit: 100 } }) as Promise<MarketView[]>,
+        viewFunction({ contractId: KinoraContract, method: 'get_movies', args: { limit: 100 } }) as Promise<Movie[]>,
       ]);
-      setMarkets(allMarkets.filter((x) => x.movie_id === movieId));
+      setMarkets(allMarkets.filter((x) => x.movie_id === movieId || x.movie_b === movieId));
+      setTitles(Object.fromEntries(allMovies.map((x) => [x.id, x.title])));
       setMovie(m);
       setMeter(mt);
       setConfig(cfg);
@@ -233,7 +236,7 @@ export default function MoviePage() {
                 <MarketCard
                   key={mk.id}
                   market={mk}
-                  movieTitle={movie.title}
+                  titles={titles}
                   config={config}
                   onChanged={() => void refresh()}
                 />

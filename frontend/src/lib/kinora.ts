@@ -76,7 +76,10 @@ export type ClaimPreview = {
 
 export type MarketView = {
   id: number;
+  kind: number; // 0 = Over/Under on one movie, 1 = head-to-head between movie_id and movie_b
   movie_id: number;
+  movie_b: number | null;
+  resolved_value_b: string | null;
   metric: string;
   threshold: string;
   closes_at_ms: string;
