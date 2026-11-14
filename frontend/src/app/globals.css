@@ -316,5 +316,6 @@ body > main { flex: 1; }
   -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
 .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.footer-links { display: flex; align-items: center; gap: 10px; }
 .footer-github { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-2); flex: none; }
 .footer-github:hover { color: var(--gold); border-color: var(--gold); }

@@ -17,7 +17,7 @@
 
 > **IMDb is broken. We're fixing it.** Bots and review-bombers decide too many scores. Kinora scores come from real people who've earned their taste.
 
-**Live demo:** _add the deployed link here_
+**Live demo:** [kinora-near.vercel.app](https://kinora-near.vercel.app/)
 Built for the **NEAR Hackathon**. Tracks: **Social Money** and **Unstoppable DeFi**.
 
 ## What Kinora does
@@ -30,7 +30,7 @@ Built for the **NEAR Hackathon**. Tracks: **Social Money** and **Unstoppable DeF
 | | |
 |---|---|
 | Network | NEAR testnet |
-| Catalog | 25 recent theatrical releases |
+| Catalog | Recent theatrical releases |
 | Voting window | 10 days per movie |
 | Minimum stake | 0.1 NEAR |
 | Wrong-side slash | 20% |
@@ -49,10 +49,9 @@ Built for the **NEAR Hackathon**. Tracks: **Social Money** and **Unstoppable DeF
 - **Taste Score and leaderboard.** 10 points per correct call, and a Critic badge at 30.
 - **Box-office markets** on US domestic gross: Over/Under, and head-to-head between two movies.
 - **Transparent data.** Each reading is stored on-chain with its source link and a SHA-256 hash of the raw response.
-- **Automatic settling** by a keeper that runs every 30 minutes.
+- **Automatic settling.** No server, no admin. A GitHub Action wakes up every 30 min, posts box-office numbers on-chain and settles markets by itself.
 - **Vibe chart:** a round chart of each movie's genre mix.
-- **Comments** on every movie, saved on the NEAR blockchain. Anyone with a wallet can post up to 280 characters, and each movie shows its newest 30.
-- **Browse** 25 recent theatrical releases with search, filters, sorting and a most-staked feature.
+- **Comments** on every movie, saved on the NEAR blockchain. Anyone with a wallet can post and express how they really feel.
 
 ## How it works
 
@@ -120,7 +119,7 @@ flowchart LR
     U[User with NEAR wallet] -->|vote, bet, comment, claim| C[(Kinora contract<br/>kinora-yash-1114.testnet)]
     W[Next.js site] -->|read via RPC| C
     U --- W
-    K[Keeper<br/>GitHub Actions, every 30 min] -->|post readings, resolve| C
+    K[Keeper<br/>GitHub Actions, triggered by cron-job.org every 30 min] -->|post readings, resolve| C
     K -->|US gross| O[OMDb]
     K -->|id mapping| T[TMDB]
     S[Seed and market scripts] -->|add movies, create markets| C
@@ -133,7 +132,7 @@ flowchart LR
 - **Contract** (`contract/`, Rust with near-sdk): movies, votes, weights, verdicts, payouts, levels, the leaderboard, markets, bets, readings and comments.
 - **Website** (`frontend/`, Next.js): reads the contract live and sends the user's wallet transactions.
 - **Scripts** (`scripts/`, Node): catalog seeding, market creation, and the data agent.
-- **Keeper** (`.github/workflows/keeper.yml`): runs the agent on a schedule.
+- **Keeper** (`.github/workflows/keeper.yml`): a GitHub Actions workflow that runs the agent. A cron-job.org timer triggers it every 30 minutes.
 
 ## Run it locally
 
@@ -171,14 +170,14 @@ TMDB_API_KEY=... OMDB_API_KEY=... node scripts/agent.mjs [--dry-run] [--loop SEC
 ```
 
 **Keeper on GitHub**
-Add the repository secrets `TMDB_API_KEY`, `OMDB_API_KEY` and `KEEPER_PRIVATE_KEY`. The workflow runs every 30 minutes and can also be started by hand from the Actions tab.
+Add the repository secrets `TMDB_API_KEY`, `OMDB_API_KEY` and `KEEPER_PRIVATE_KEY`. A cron-job.org timer starts the workflow every 30 minutes by calling GitHub's `workflow_dispatch` endpoint. You can also start it by hand from the Actions tab.
 
 ## Repository layout
 ```
 contract/    Rust smart contract and its tests
 frontend/    Next.js website
 scripts/     seed, market and data-agent scripts
-docs/        product brief and video script
+docs/        product brief
 .github/     keeper workflow
 ```
 
@@ -189,3 +188,10 @@ docs/        product brief and video script
 - More market types: weekend gross, gross brackets, and "will it pass its budget".
 - AI critic agents that stake on movies and build a public track record.
 - A mainnet launch.
+
+## Watch and support
+- **Demo video:** [youtu.be/ikslV6IC8UU](https://youtu.be/ikslV6IC8UU)
+- **Launch post on X:** [x.com/yash0wtf](https://x.com/yash0wtf/status/2121727874797609383?s=20)
+- **Live site:** [kinora-near.vercel.app](https://kinora-near.vercel.app/)
+
+If Kinora made you want to stake a verdict, give the post a like and a repost, drop a comment on the video, and star the repo on GitHub. It really helps. Thank you.
