@@ -28,16 +28,53 @@ function colorFor(genre: string, index: number): string {
   return GENRE_COLORS[genre] ?? FALLBACK[index % FALLBACK.length];
 }
 
+const RADIUS = 52;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+const GAP = 2.5; // visible gap between slices, in stroke length
+
 export function VibeChart({ genres }: { genres: string[] }) {
   const mix = vibeMix(genres);
   if (mix.length === 0) return null;
+
+  const slices = mix.map((m, i) => {
+    const start = mix.slice(0, i).reduce((sum, prev) => sum + prev.pct, 0);
+    const visible = Math.max((m.pct / 100) * CIRCUMFERENCE - GAP, 0.1);
+    return {
+      key: m.name,
+      color: colorFor(m.name, i),
+      dash: `${visible} ${CIRCUMFERENCE - visible}`,
+      offset: -(start / 100) * CIRCUMFERENCE,
+    };
+  });
+  const top = mix[0];
+
   return (
     <div className="vibe">
-      <div className="vibe-bar" role="img" aria-label={mix.map((m) => `${m.name} ${m.pct}%`).join(', ')}>
-        {mix.map((m, i) => (
-          <span key={m.name} style={{ width: `${m.pct}%`, background: colorFor(m.name, i) }} />
-        ))}
-      </div>
+      <svg
+        className="vibe-donut"
+        viewBox="0 0 140 140"
+        role="img"
+        aria-label={mix.map((m) => `${m.name} ${m.pct}%`).join(', ')}
+      >
+        <g transform="rotate(-90 70 70)">
+          <circle cx="70" cy="70" r={RADIUS} fill="none" stroke="var(--line)" strokeWidth="16" />
+          {slices.map((s) => (
+            <circle
+              key={s.key}
+              cx="70"
+              cy="70"
+              r={RADIUS}
+              fill="none"
+              stroke={s.color}
+              strokeWidth="16"
+              strokeDasharray={s.dash}
+              strokeDashoffset={s.offset}
+            />
+          ))}
+        </g>
+        <text x="70" y="68" textAnchor="middle" className="vibe-donut-pct">{top.pct}%</text>
+        <text x="70" y="88" textAnchor="middle" className="vibe-donut-name">{top.name}</text>
+      </svg>
       <ul className="vibe-list">
         {mix.map((m, i) => (
           <li key={m.name}>
