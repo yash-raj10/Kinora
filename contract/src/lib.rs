@@ -105,12 +105,18 @@ pub struct ClaimPreview {
     pub claimed: bool,
 }
 
-// Side 0 = Under (value at or below the threshold), side 1 = Over (strictly above it).
+pub const MARKET_THRESHOLD: u8 = 0;
+pub const MARKET_DUEL: u8 = 1;
+
+// Threshold market: side 0 = Under (at or below the threshold), side 1 = Over (strictly above it).
+// Duel market: side 0 = movie A (`movie_id`) ends higher, side 1 = movie B (`movie_b`) ends higher; a tie voids it.
 #[near(serializers = [borsh])]
 #[derive(Clone)]
 pub struct Market {
     pub id: u64,
+    pub kind: u8,
     pub movie_id: u64,
+    pub movie_b: Option<u64>,
     pub metric: String,
     pub threshold: u64,
     pub closes_at_ms: u64,
@@ -120,6 +126,7 @@ pub struct Market {
     pub outcome: Option<u8>,
     pub voided: bool,
     pub resolved_value: Option<u64>,
+    pub resolved_value_b: Option<u64>,
 }
 
 #[near(serializers = [json, borsh])]
@@ -145,7 +152,9 @@ pub struct DataPoint {
 #[near(serializers = [json])]
 pub struct MarketView {
     pub id: u64,
+    pub kind: u8,
     pub movie_id: u64,
+    pub movie_b: Option<u64>,
     pub metric: String,
     pub threshold: U64,
     pub closes_at_ms: U64,
@@ -156,6 +165,7 @@ pub struct MarketView {
     pub state: String, // "open", "closed", "resolved" or "void"
     pub outcome: Option<u8>,
     pub resolved_value: Option<U64>,
+    pub resolved_value_b: Option<U64>,
 }
 
 #[near(serializers = [json])]
@@ -503,7 +513,9 @@ impl Contract {
             id,
             Market {
                 id,
+                kind: MARKET_THRESHOLD,
                 movie_id,
+                movie_b: None,
                 metric,
                 threshold: threshold.0,
                 closes_at_ms: closes_at_ms.0,
@@ -513,6 +525,45 @@ impl Contract {
                 outcome: None,
                 voided: false,
                 resolved_value: None,
+                resolved_value_b: None,
+            },
+        );
+        id
+    }
+
+    pub fn create_duel(
+        &mut self,
+        movie_a: u64,
+        movie_b: u64,
+        metric: String,
+        closes_at_ms: U64,
+        resolves_at_ms: U64,
+    ) -> u64 {
+        self.assert_owner();
+        require!(movie_a != movie_b, "A duel needs two different movies");
+        require!(self.movies.contains_key(&movie_a), "Movie not found");
+        require!(self.movies.contains_key(&movie_b), "Movie not found");
+        require!(!metric.is_empty(), "Metric is required");
+        require!(closes_at_ms.0 <= resolves_at_ms.0, "Betting must close before resolution");
+        let id = self.next_market_id;
+        self.next_market_id += 1;
+        self.markets.insert(
+            id,
+            Market {
+                id,
+                kind: MARKET_DUEL,
+                movie_id: movie_a,
+                movie_b: Some(movie_b),
+                metric,
+                threshold: 0,
+                closes_at_ms: closes_at_ms.0,
+                resolves_at_ms: resolves_at_ms.0,
+                pools: [0; 2],
+                counts: [0; 2],
+                outcome: None,
+                voided: false,
+                resolved_value: None,
+                resolved_value_b: None,
             },
         );
         id
@@ -573,19 +624,21 @@ impl Contract {
 
     pub fn resolve_market(&mut self, market_id: u64) {
         let now = env::block_timestamp_ms();
-        let (movie_id, resolves_at, threshold) = {
+        let (kind, movie_id, movie_b, resolves_at, threshold) = {
             let m = self.market(market_id);
             require!(m.outcome.is_none() && !m.voided, "Already resolved");
-            (m.movie_id, m.resolves_at_ms, m.threshold)
+            (m.kind, m.movie_id, m.movie_b, m.resolves_at_ms, m.threshold)
         };
         require!(now >= resolves_at, "Too early to resolve");
 
-        // The first reading posted at or after the resolve time decides the market.
-        let reading = self
-            .datapoints
-            .get(&movie_id)
-            .and_then(|v| v.iter().find(|d| d.posted_at_ms.0 >= resolves_at).cloned());
-        if reading.is_none() {
+        // The first reading per movie posted at or after the resolve time decides the market.
+        let reading_a = self.first_reading(movie_id, resolves_at);
+        let reading_b = match (kind, movie_b) {
+            (MARKET_DUEL, Some(b)) => self.first_reading(b, resolves_at),
+            _ => None,
+        };
+        let ready = reading_a.is_some() && (kind != MARKET_DUEL || reading_b.is_some());
+        if !ready {
             require!(
                 now >= resolves_at + FINALIZE_GRACE_MS,
                 "Waiting for resolution data from the resolver"
@@ -596,17 +649,32 @@ impl Contract {
             .markets
             .get_mut(&market_id)
             .unwrap_or_else(|| env::panic_str("Market not found"));
-        match reading {
-            Some(d) => {
-                let side = if d.value.0 > threshold { 1usize } else { 0usize };
-                m.resolved_value = Some(d.value.0);
-                if m.pools[side] == 0 {
-                    m.voided = true;
-                } else {
-                    m.outcome = Some(side as u8);
-                }
+        let a = match reading_a {
+            Some(a) if ready => a,
+            _ => {
+                m.voided = true;
+                return;
             }
-            None => m.voided = true,
+        };
+        m.resolved_value = Some(a);
+        let winning_side: Option<usize> = if kind == MARKET_DUEL {
+            let b = reading_b.unwrap_or_default();
+            m.resolved_value_b = Some(b);
+            if a > b {
+                Some(0)
+            } else if b > a {
+                Some(1)
+            } else {
+                None
+            }
+        } else if a > threshold {
+            Some(1)
+        } else {
+            Some(0)
+        };
+        match winning_side {
+            Some(side) if m.pools[side] > 0 => m.outcome = Some(side as u8),
+            _ => m.voided = true,
         }
     }
 
@@ -838,7 +906,9 @@ impl Contract {
         };
         MarketView {
             id: m.id,
+            kind: m.kind,
             movie_id: m.movie_id,
+            movie_b: m.movie_b,
             metric: m.metric.clone(),
             threshold: U64(m.threshold),
             closes_at_ms: U64(m.closes_at_ms),
@@ -849,7 +919,16 @@ impl Contract {
             state: state.to_string(),
             outcome: m.outcome,
             resolved_value: m.resolved_value.map(U64),
+            resolved_value_b: m.resolved_value_b.map(U64),
         }
+    }
+
+    fn first_reading(&self, movie_id: u64, at_or_after_ms: u64) -> Option<u64> {
+        self.datapoints.get(&movie_id).and_then(|v| {
+            v.iter()
+                .find(|d| d.posted_at_ms.0 >= at_or_after_ms)
+                .map(|d| d.value.0)
+        })
     }
 
     fn movie(&self, movie_id: u64) -> &Movie {
@@ -1566,6 +1645,181 @@ mod tests {
         as_user("anyone.near", M_CLOSE + 1);
         assert_eq!(c.get_market(m).unwrap().state, "closed");
         assert_eq!(c.get_config().market_count, 1);
+    }
+
+    fn post_for(c: &mut Contract, movie: u64, who: &str, value: u64, ts_ms: u64) {
+        as_user(who, ts_ms);
+        c.post_data_point(movie, U64(value), "OMDb".into(), "https://omdb".into(), "hash".into(), U64(1));
+    }
+
+    // Movie 0 is "A", a second movie added here is "B".
+    fn mk_duel(c: &mut Contract) -> u64 {
+        as_user("owner.near", OPEN_MS);
+        c.add_movie(2, "Coraline".into(), String::new(), U64(0), U64(END_MS));
+        c.create_duel(
+            0,
+            1,
+            "Domestic gross (USD, OMDb)".into(),
+            U64(M_CLOSE),
+            U64(M_RESOLVE),
+        )
+    }
+
+    fn duel_with_bets(c: &mut Contract) -> u64 {
+        let d = mk_duel(c);
+        bet_as(c, d, "asha.near", 1000, 0, OPEN_MS); // backs A
+        bet_as(c, d, "ben.near", 500, 0, OPEN_MS); // backs A
+        bet_as(c, d, "chitra.near", 800, 1, OPEN_MS); // backs B
+        bet_as(c, d, "dev.near", 700, 1, OPEN_MS); // backs B
+        d
+    }
+
+    #[test]
+    fn duel_pays_the_side_whose_movie_ends_higher() {
+        let mut c = setup();
+        let d = duel_with_bets(&mut c);
+        assert_eq!(c.get_market(d).unwrap().kind, 1);
+        assert_eq!(c.get_market(d).unwrap().movie_b, Some(1));
+
+        post_for(&mut c, 0, "owner.near", 300, M_RESOLVE + 100);
+        post_for(&mut c, 1, "owner.near", 200, M_RESOLVE + 100);
+        resolve(&mut c, d, M_RESOLVE + 200);
+
+        let v = c.get_market(d).unwrap();
+        assert_eq!((v.state.as_str(), v.outcome), ("resolved", Some(0)));
+        assert_eq!(v.resolved_value.map(|x| x.0), Some(300));
+        assert_eq!(v.resolved_value_b.map(|x| x.0), Some(200));
+
+        let dust = 10_000_000_000_000_000u128;
+        let (state, asha) = mpay(&c, d, "asha.near");
+        assert_eq!(state, "won");
+        assert!(asha <= milli(2000) && milli(2000) - asha < dust);
+        assert_eq!(mpay(&c, d, "chitra.near"), ("lost".to_string(), 0));
+        let paid: u128 = ["asha.near", "ben.near", "chitra.near", "dev.near"]
+            .iter()
+            .map(|w| mpay(&c, d, w).1)
+            .sum();
+        assert!(paid <= milli(3000) && milli(3000) - paid < dust * 2);
+    }
+
+    #[test]
+    fn duel_pays_movie_b_when_it_ends_higher() {
+        let mut c = setup();
+        let d = duel_with_bets(&mut c);
+        post_for(&mut c, 0, "owner.near", 100, M_RESOLVE);
+        post_for(&mut c, 1, "owner.near", 400, M_RESOLVE);
+        resolve(&mut c, d, M_RESOLVE);
+        assert_eq!(c.get_market(d).unwrap().outcome, Some(1));
+        assert_eq!(mpay(&c, d, "asha.near"), ("lost".to_string(), 0));
+        let (state, chitra) = mpay(&c, d, "chitra.near");
+        assert_eq!(state, "won");
+        // chitra staked 0.8 of the winning 1.5 and shares the losing 1.5
+        assert!(chitra > milli(1500) && chitra < milli(1600));
+    }
+
+    #[test]
+    fn duel_tie_voids_and_refunds_everyone() {
+        let mut c = setup();
+        let d = duel_with_bets(&mut c);
+        post_for(&mut c, 0, "owner.near", 250, M_RESOLVE);
+        post_for(&mut c, 1, "owner.near", 250, M_RESOLVE);
+        resolve(&mut c, d, M_RESOLVE);
+        assert_eq!(c.get_market(d).unwrap().state, "void");
+        assert_eq!(mpay(&c, d, "asha.near"), ("void".to_string(), milli(1000)));
+        assert_eq!(mpay(&c, d, "dev.near"), ("void".to_string(), milli(700)));
+    }
+
+    #[test]
+    #[should_panic(expected = "Waiting for resolution data")]
+    fn duel_waits_when_only_one_movie_has_a_fresh_reading() {
+        let mut c = setup();
+        let d = duel_with_bets(&mut c);
+        post_for(&mut c, 0, "owner.near", 300, M_RESOLVE + 100);
+        resolve(&mut c, d, M_RESOLVE + 200);
+    }
+
+    #[test]
+    fn duel_ignores_readings_posted_before_the_resolve_time() {
+        let mut c = setup();
+        let d = duel_with_bets(&mut c);
+        // early readings say B leads, the readings that count say A leads
+        post_for(&mut c, 0, "owner.near", 100, M_RESOLVE - 1_000);
+        post_for(&mut c, 1, "owner.near", 900, M_RESOLVE - 1_000);
+        post_for(&mut c, 0, "owner.near", 300, M_RESOLVE + 100);
+        post_for(&mut c, 1, "owner.near", 200, M_RESOLVE + 100);
+        // later readings are ignored too
+        post_for(&mut c, 1, "owner.near", 999, M_RESOLVE + 5_000);
+        resolve(&mut c, d, M_RESOLVE + 5_000);
+        let v = c.get_market(d).unwrap();
+        assert_eq!(v.outcome, Some(0));
+        assert_eq!(v.resolved_value_b.map(|x| x.0), Some(200));
+    }
+
+    #[test]
+    fn duel_voids_after_grace_when_no_data_arrives() {
+        let mut c = setup();
+        let d = duel_with_bets(&mut c);
+        post_for(&mut c, 0, "owner.near", 300, M_RESOLVE + 100); // only one side ever reported
+        resolve(&mut c, d, M_RESOLVE + FINALIZE_GRACE_MS);
+        assert_eq!(c.get_market(d).unwrap().state, "void");
+        assert_eq!(mpay(&c, d, "chitra.near"), ("void".to_string(), milli(800)));
+    }
+
+    #[test]
+    fn duel_voids_when_nobody_backed_the_winning_movie() {
+        let mut c = setup();
+        let d = mk_duel(&mut c);
+        bet_as(&mut c, d, "asha.near", 300, 1, OPEN_MS); // everyone backs B
+        bet_as(&mut c, d, "ben.near", 200, 1, OPEN_MS);
+        post_for(&mut c, 0, "owner.near", 500, M_RESOLVE);
+        post_for(&mut c, 1, "owner.near", 100, M_RESOLVE); // A wins, nobody backed A
+        resolve(&mut c, d, M_RESOLVE);
+        assert_eq!(c.get_market(d).unwrap().state, "void");
+        assert_eq!(mpay(&c, d, "asha.near").1, milli(300));
+    }
+
+    #[test]
+    #[should_panic(expected = "Only the owner")]
+    fn only_the_owner_creates_duels() {
+        let mut c = setup();
+        as_user("owner.near", OPEN_MS);
+        c.add_movie(2, "Coraline".into(), String::new(), U64(0), U64(END_MS));
+        as_user("mallory.near", OPEN_MS);
+        c.create_duel(0, 1, "Gross".into(), U64(1), U64(2));
+    }
+
+    #[test]
+    #[should_panic(expected = "two different movies")]
+    fn duel_needs_two_different_movies() {
+        let mut c = setup();
+        as_user("owner.near", OPEN_MS);
+        c.create_duel(0, 0, "Gross".into(), U64(1), U64(2));
+    }
+
+    #[test]
+    #[should_panic(expected = "Movie not found")]
+    fn duel_rejects_an_unknown_movie() {
+        let mut c = setup();
+        as_user("owner.near", OPEN_MS);
+        c.create_duel(0, 7, "Gross".into(), U64(1), U64(2));
+    }
+
+    #[test]
+    #[should_panic(expected = "close before resolution")]
+    fn duel_must_close_before_it_resolves() {
+        let mut c = setup();
+        as_user("owner.near", OPEN_MS);
+        c.add_movie(2, "Coraline".into(), String::new(), U64(0), U64(END_MS));
+        c.create_duel(0, 1, "Gross".into(), U64(9), U64(2));
+    }
+
+    #[test]
+    fn threshold_markets_report_kind_zero() {
+        let mut c = setup();
+        let m = mk_market(&mut c, 100);
+        as_user("anyone.near", OPEN_MS);
+        let v = c.get_market(m).unwrap();
+        assert_eq!((v.kind, v.movie_b, v.resolved_value_b.is_none()), (0, None, true));
     }
 
     #[test]
