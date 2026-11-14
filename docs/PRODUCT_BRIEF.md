@@ -115,6 +115,7 @@ Each Over/Under market has one fixed threshold, set when it opens. It is a **rou
 ## Everything on the site
 - Wallet sign-in with a NEAR wallet
 - A catalog of 25 recent theatrical releases, with posters, genres, cast and overview
+- **Comments** on every movie, saved on the blockchain. Anyone with a wallet can write up to 280 characters
 - Search, filters and sorting on the home page, and a "most staked right now" feature
 - Stake-weighted Meter for each movie
 - Levels and vote weights

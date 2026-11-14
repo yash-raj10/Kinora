@@ -20,6 +20,7 @@ Kinora is a movie rating site where a rating costs something to give. You vote S
 - **Transparent data.** Each reading is stored on-chain with its source link and a SHA-256 hash of the raw response.
 - **Automatic settling** by a keeper that runs every 30 minutes.
 - **Vibe chart:** a round chart of each movie's genre mix.
+- **Comments** on every movie, saved on the NEAR blockchain. Anyone with a wallet can post up to 280 characters, and each movie shows its newest 30.
 - **Browse** 25 recent theatrical releases with search, filters, sorting and a most-staked feature.
 
 ## How it works
