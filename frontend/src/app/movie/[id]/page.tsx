@@ -264,14 +264,6 @@ export default function MoviePage() {
             </section>
           )}
 
-          {meta && meta.genres.length > 0 && (
-            <section>
-              <h2>Vibe</h2>
-              <VibeChart genres={meta.genres} />
-              <p className="note">Genre mix from TMDB, weighted toward the first-listed genres.</p>
-            </section>
-          )}
-
           <section>
             <h2>Comments{comments.length > 0 ? ` (${comments.length})` : ''}</h2>
             {signedAccountId ? (
@@ -332,6 +324,7 @@ export default function MoviePage() {
           )}
         </div>
 
+        <div className="mside">
         <aside className="stub" aria-label="Your call">
           <div className="stub-head">
             <h2>Your call</h2>
@@ -437,6 +430,15 @@ export default function MoviePage() {
             {message && <p className="success">{message}</p>}
           </div>
         </aside>
+
+        {meta && meta.genres.length > 0 && (
+          <section className="side-vibe">
+            <h2>Vibe</h2>
+            <VibeChart genres={meta.genres} />
+            <p className="note">Genre mix from TMDB, weighted toward the first-listed genres.</p>
+          </section>
+        )}
+        </div>
       </div>
     </main>
   );

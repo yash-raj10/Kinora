@@ -187,7 +187,10 @@ img { display: block; max-width: 100%; }
 .vibe-list b { color: var(--ink); }
 
 /* ticket stub */
-.stub { position: sticky; top: 92px; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; }
+.mside { display: grid; gap: 22px; align-self: start; }
+.side-vibe { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 22px; }
+.side-vibe h2 { font-family: var(--font-display-stack); font-weight: 400; font-size: 1.7rem; line-height: 1.1; margin-bottom: 14px; }
+.stub { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; }
 .stub-head { padding: 22px 22px 18px; border-bottom: 2px dashed var(--line); position: relative; }
 .stub-head::before, .stub-head::after {
   content: ''; position: absolute; bottom: -11px; width: 20px; height: 20px; border-radius: 50%; background: var(--paper); border: 1px solid var(--line);
@@ -231,7 +234,7 @@ img { display: block; max-width: 100%; }
 @media (max-width: 860px) {
   .feature-inner { grid-template-columns: 1fr; }
   .mbody { grid-template-columns: 1fr; gap: 32px; }
-  .stub { position: static; order: -1; }
+  .mside { order: -1; }
   .mhero-row { flex-direction: column; align-items: flex-start; }
   .mposter { width: 140px; }
   .nav-inner { gap: 10px; }
