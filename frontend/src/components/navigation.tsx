@@ -19,7 +19,10 @@ export const Navigation = () => {
   return (
     <nav className="nav" aria-label="Main">
       <div className="container nav-inner">
-        <Link href="/" className="brand">Kinora</Link>
+        <Link href="/" className="brand" aria-label="Kinora home">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/kinora-logo.svg" alt="Kinora" width={1381} height={595} />
+        </Link>
         <div className="nav-links">
           <Link href="/" aria-current={pathname === '/' || pathname.startsWith('/movie') ? 'page' : undefined}>
             Movies
