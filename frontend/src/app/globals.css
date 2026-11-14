@@ -315,3 +315,6 @@ body > main { flex: 1; }
   background: linear-gradient(transparent 58%, rgba(201, 169, 110, 0.4) 58%);
   -webkit-box-decoration-break: clone; box-decoration-break: clone;
 }
+.footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.footer-github { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-2); flex: none; }
+.footer-github:hover { color: var(--gold); border-color: var(--gold); }
