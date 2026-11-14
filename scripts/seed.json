@@ -1,198 +1,177 @@
 [
   {
-    "tmdb_id": 79464,
-    "title": "Rockstar",
-    "poster_url": "https://image.tmdb.org/t/p/w500/cJZC9riwrdATBUonkZJZD6y9g40.jpg",
-    "release_ts_ms": "1320969600000",
-    "vote_end_ts_ms": "1795195401102"
+    "tmdb_id": 1423191,
+    "title": "Resident Evil",
+    "poster_url": "https://image.tmdb.org/t/p/w500/gAgWJhUSQWCgtKR8170nMkYlBda.jpg",
+    "release_ts_ms": "1789516800000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 14836,
-    "title": "Coraline",
-    "poster_url": "https://image.tmdb.org/t/p/w500/4jeFXQYytChdZYE9JYO7Un87IlW.jpg",
-    "release_ts_ms": "1233792000000",
-    "vote_end_ts_ms": "1795195401102"
+    "tmdb_id": 1263337,
+    "title": "Heart of the Beast",
+    "poster_url": "https://image.tmdb.org/t/p/w500/6sYemVUn79UPKz1ZsSG6kPU4RVy.jpg",
+    "release_ts_ms": "1789776000000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 1366,
-    "title": "Rocky",
-    "poster_url": "https://image.tmdb.org/t/p/w500/1mcJmdbRLusxhoSGjFI3pbEboXt.jpg",
-    "release_ts_ms": "218419200000",
-    "vote_end_ts_ms": "1795195401102"
+    "tmdb_id": 1283515,
+    "title": "Verity",
+    "poster_url": "https://image.tmdb.org/t/p/w500/rmaNMA1seHqpjtnYKzyynFAr1g8.jpg",
+    "release_ts_ms": "1790726400000",
+    "vote_end_ts_ms": "1795511687465"
+  },
+  {
+    "tmdb_id": 1400837,
+    "title": "Other Mommy",
+    "poster_url": "https://image.tmdb.org/t/p/w500/fGRNCssTRrhYZxNzykGGCoMsAVq.jpg",
+    "release_ts_ms": "1791331200000",
+    "vote_end_ts_ms": "1795511687465"
+  },
+  {
+    "tmdb_id": 1400940,
+    "title": "Clayface",
+    "poster_url": "https://image.tmdb.org/t/p/w500/9l1NuFjel2j89hiuiJbsxfblqjy.jpg",
+    "release_ts_ms": "1792368000000",
+    "vote_end_ts_ms": "1795511687465"
+  },
+  {
+    "tmdb_id": 1153576,
+    "title": "Street Fighter",
+    "poster_url": "https://image.tmdb.org/t/p/w500/dJPT2Uf12X6aFg8i5N67NTpIZ9t.jpg",
+    "release_ts_ms": "1791849600000",
+    "vote_end_ts_ms": "1795511687465"
+  },
+  {
+    "tmdb_id": 1765072,
+    "title": "You Can See Everything",
+    "poster_url": "https://image.tmdb.org/t/p/w500/Ap8QwmKfSjYbWC4XIP8w9pdn72O.jpg",
+    "release_ts_ms": "1792108800000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
     "tmdb_id": 1381071,
     "title": "Godzilla Minus Zero",
     "poster_url": "https://image.tmdb.org/t/p/w500/hSmIJluOJmTWvJs4d7kHRxjc8s8.jpg",
     "release_ts_ms": "1793664000000",
-    "vote_end_ts_ms": "1795800201102"
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 1300968,
-    "title": "The Hunger Games: Sunrise on the Reaping",
-    "poster_url": "https://image.tmdb.org/t/p/w500/j1MNyNNgNQL6f27cb3m3uKaPKd6.jpg",
-    "release_ts_ms": "1794960000000",
-    "vote_end_ts_ms": "1795800201102"
+    "tmdb_id": 791523,
+    "title": "Wildwood",
+    "poster_url": "https://image.tmdb.org/t/p/w500/snFM00mpNAfUzUtkdEW0uDEvXA0.jpg",
+    "release_ts_ms": "1792368000000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 129,
-    "title": "Spirited Away",
-    "poster_url": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",
-    "release_ts_ms": "995587200000",
-    "vote_end_ts_ms": "1794591501102"
+    "tmdb_id": 1375441,
+    "title": "Primetime",
+    "poster_url": "https://image.tmdb.org/t/p/w500/lmrulvLbmaejTix1YaMxo1oGhH1.jpg",
+    "release_ts_ms": "1790121600000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 360814,
-    "title": "Dangal",
-    "poster_url": "https://image.tmdb.org/t/p/w500/cJRPOLEexI7qp2DKtFfCh7YaaUG.jpg",
-    "release_ts_ms": "1482278400000",
-    "vote_end_ts_ms": "1795368201102"
+    "tmdb_id": 1248832,
+    "title": "Digger",
+    "poster_url": "https://image.tmdb.org/t/p/w500/1ATXKrIPJyKNwnJ6lcG088Sa6zi.jpg",
+    "release_ts_ms": "1790553600000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 20453,
-    "title": "3 Idiots",
-    "poster_url": "https://image.tmdb.org/t/p/w500/66A9MqXOyVFCssoloscw79z8Tew.jpg",
-    "release_ts_ms": "1261526400000",
-    "vote_end_ts_ms": "1795368201102"
+    "tmdb_id": 1422041,
+    "title": "La Bola Negra",
+    "poster_url": "https://image.tmdb.org/t/p/w500/7HwFQTMghL6HOvzEnXYUvyuZXeh.jpg",
+    "release_ts_ms": "1790294400000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 117691,
-    "title": "Gangs of Wasseypur - Part 1",
-    "poster_url": "https://image.tmdb.org/t/p/w500/xAy208Znkingmfnb5ZbULwLyIwW.jpg",
-    "release_ts_ms": "1340323200000",
-    "vote_end_ts_ms": "1795454601102"
+    "tmdb_id": 1503762,
+    "title": "Sense and Sensibility",
+    "poster_url": "https://image.tmdb.org/t/p/w500/czsyPHosFNbh4PPqXfqWu1aBXnA.jpg",
+    "release_ts_ms": "1790121600000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 538858,
-    "title": "Tumbbad",
-    "poster_url": "https://image.tmdb.org/t/p/w500/z1xOCxw780WFJC5uCTMfCkQ4Agi.jpg",
-    "release_ts_ms": "1539302400000",
-    "vote_end_ts_ms": "1795281801102"
+    "tmdb_id": 1255833,
+    "title": "Whalefall",
+    "poster_url": "https://image.tmdb.org/t/p/w500/vjTYUTgh9nO88i6HZ4YPRhiFL05.jpg",
+    "release_ts_ms": "1791936000000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 61202,
-    "title": "Zindagi Na Milegi Dobara",
-    "poster_url": "https://image.tmdb.org/t/p/w500/hKO9O715wYxjkQSEv47giCYcyO8.jpg",
-    "release_ts_ms": "1310688000000",
-    "vote_end_ts_ms": "1795627401102"
+    "tmdb_id": 1117898,
+    "title": "The Cat in the Hat",
+    "poster_url": "https://image.tmdb.org/t/p/w500/mWN6knIVJ2o7eGwSm7mOgSCwNUc.jpg",
+    "release_ts_ms": "1793404800000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 127501,
-    "title": "Barfi!",
-    "poster_url": "https://image.tmdb.org/t/p/w500/8lVuWmArvr41CvyvpgI3elD5iB1.jpg",
-    "release_ts_ms": "1347494400000",
-    "vote_end_ts_ms": "1795541001102"
+    "tmdb_id": 1195803,
+    "title": "Wicker",
+    "poster_url": "https://image.tmdb.org/t/p/w500/6FcBZOKvyrLCKGCyBG0ySCR4okt.jpg",
+    "release_ts_ms": "1792540800000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 534780,
-    "title": "Andhadhun",
-    "poster_url": "https://image.tmdb.org/t/p/w500/dy3K6hNvwE05siGgiLJcEiwgpdO.jpg",
-    "release_ts_ms": "1538697600000",
-    "vote_end_ts_ms": "1795454601102"
+    "tmdb_id": 1281331,
+    "title": "The Social Reckoning",
+    "poster_url": "https://image.tmdb.org/t/p/w500/7jK6NuxVg1XuEV7UdNa6KO03IgZ.jpg",
+    "release_ts_ms": "1791331200000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 11807,
-    "title": "Jab We Met",
-    "poster_url": "https://image.tmdb.org/t/p/w500/sQ7A7jyTbkK90vjd8yCRuoyL9CK.jpg",
-    "release_ts_ms": "1193356800000",
-    "vote_end_ts_ms": "1795713801102"
+    "tmdb_id": 891621,
+    "title": "Wild Horse Nine",
+    "poster_url": "https://image.tmdb.org/t/p/w500/dNJFRtVg3xLQ7dbNIQ55cmmIniD.jpg",
+    "release_ts_ms": "1793318400000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 7508,
-    "title": "Like Stars on Earth",
-    "poster_url": "https://image.tmdb.org/t/p/w500/puHRt6Raovm5ujGCdwLWvRv4NHU.jpg",
-    "release_ts_ms": "1198108800000",
-    "vote_end_ts_ms": "1795368201102"
+    "tmdb_id": 1477104,
+    "title": "Shaun the Sheep: The Beast of Mossy Bottom",
+    "poster_url": "https://image.tmdb.org/t/p/w500/gayX49siwXf8eNs16rtk1fI91Ey.jpg",
+    "release_ts_ms": "1789603200000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 352173,
-    "title": "Drishyam",
-    "poster_url": "https://image.tmdb.org/t/p/w500/gIClWRv5OSe8rl5Koi0AeUcCZ9Z.jpg",
-    "release_ts_ms": "1438214400000",
-    "vote_end_ts_ms": "1795627401102"
+    "tmdb_id": 1525072,
+    "title": "The Perfect Holiday",
+    "poster_url": "https://image.tmdb.org/t/p/w500/cNSQoDGWbnSVex9bkffBju1a8Lt.jpg",
+    "release_ts_ms": "1792627200000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 27205,
-    "title": "Inception",
-    "poster_url": "https://image.tmdb.org/t/p/w500/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg",
-    "release_ts_ms": "1279152000000",
-    "vote_end_ts_ms": "1795281801102"
+    "tmdb_id": 1590933,
+    "title": "You, Like a Star",
+    "poster_url": "https://image.tmdb.org/t/p/w500/gimofPPz5J9KgMHXGoQuvl3q4VA.jpg",
+    "release_ts_ms": "1791504000000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 157336,
-    "title": "Interstellar",
-    "poster_url": "https://image.tmdb.org/t/p/w500/yQvGrMoipbRoddT0ZR8tPoR7NfX.jpg",
-    "release_ts_ms": "1415059200000",
-    "vote_end_ts_ms": "1795454601102"
+    "tmdb_id": 1697911,
+    "title": "Drummer Boy",
+    "poster_url": "https://image.tmdb.org/t/p/w500/bhjdgMm2fFrysSzVqv5RwRwIbVf.jpg",
+    "release_ts_ms": "1793836800000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 155,
-    "title": "The Dark Knight",
-    "poster_url": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-    "release_ts_ms": "1216166400000",
-    "vote_end_ts_ms": "1795541001102"
+    "tmdb_id": 1755291,
+    "title": "NAZA",
+    "poster_url": "https://image.tmdb.org/t/p/w500/cbxiZ1l21KUATu2KKQQ8J8fJhpe.jpg",
+    "release_ts_ms": "1790294400000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 496243,
-    "title": "Parasite",
-    "poster_url": "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
-    "release_ts_ms": "1559174400000",
-    "vote_end_ts_ms": "1795368201102"
+    "tmdb_id": 607833,
+    "title": "The Intern",
+    "poster_url": "https://image.tmdb.org/t/p/w500/pDJEuLTnzYMOPsvpyg3VRWilalp.jpg",
+    "release_ts_ms": "1789516800000",
+    "vote_end_ts_ms": "1795511687465"
   },
   {
-    "tmdb_id": 872585,
-    "title": "Oppenheimer",
-    "poster_url": "https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
-    "release_ts_ms": "1689724800000",
-    "vote_end_ts_ms": "1795713801102"
-  },
-  {
-    "tmdb_id": 324857,
-    "title": "Spider-Man: Into the Spider-Verse",
-    "poster_url": "https://image.tmdb.org/t/p/w500/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg",
-    "release_ts_ms": "1544054400000",
-    "vote_end_ts_ms": "1795281801102"
-  },
-  {
-    "tmdb_id": 244786,
-    "title": "Whiplash",
-    "poster_url": "https://image.tmdb.org/t/p/w500/7fn624j5lj3xTme2SgiLCeuedmO.jpg",
-    "release_ts_ms": "1412899200000",
-    "vote_end_ts_ms": "1794591501102"
-  },
-  {
-    "tmdb_id": 278,
-    "title": "The Shawshank Redemption",
-    "poster_url": "https://image.tmdb.org/t/p/w500/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg",
-    "release_ts_ms": "780278400000",
-    "vote_end_ts_ms": "1795627401102"
-  },
-  {
-    "tmdb_id": 372058,
-    "title": "Your Name.",
-    "poster_url": "https://image.tmdb.org/t/p/w500/vfJFJPepRKapMd5G2ro7klIRysq.jpg",
-    "release_ts_ms": "1467331200000",
-    "vote_end_ts_ms": "1795454601102"
-  },
-  {
-    "tmdb_id": 550,
-    "title": "Fight Club",
-    "poster_url": "https://image.tmdb.org/t/p/w500/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg",
-    "release_ts_ms": "939945600000",
-    "vote_end_ts_ms": "1795368201102"
-  },
-  {
-    "tmdb_id": 680,
-    "title": "Pulp Fiction",
-    "poster_url": "https://image.tmdb.org/t/p/w500/vQWk5YBFWF4bZaofAbv0tShwBvQ.jpg",
-    "release_ts_ms": "779155200000",
-    "vote_end_ts_ms": "1795541001102"
-  },
-  {
-    "tmdb_id": 76341,
-    "title": "Mad Max: Fury Road",
-    "poster_url": "https://image.tmdb.org/t/p/w500/ulcAi4dKpAjHwYGS08vNyx9H6I9.jpg",
-    "release_ts_ms": "1431475200000",
-    "vote_end_ts_ms": "1795800201102"
+    "tmdb_id": 1706702,
+    "title": "Daniel and the Fiery Furnace",
+    "poster_url": "https://image.tmdb.org/t/p/w500/leE7dixdbzHXUBJdQgW1fFHz0ru.jpg",
+    "release_ts_ms": "1789689600000",
+    "vote_end_ts_ms": "1795511687465"
   }
 ]
