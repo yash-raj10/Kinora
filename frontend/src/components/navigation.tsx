@@ -21,7 +21,7 @@ export const Navigation = () => {
       <div className="container nav-inner">
         <Link href="/" className="brand" aria-label="Kinora home">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/kinora-logo.svg" alt="Kinora" width={1381} height={595} />
+          <img src="/kinora-logo.svg" alt="Kinora" width={1416} height={290} />
         </Link>
         <div className="nav-links">
           <Link href="/" aria-current={pathname === '/' || pathname.startsWith('/movie') ? 'page' : undefined}>
