@@ -11,6 +11,9 @@ pub const BUCKETS: usize = 4; // 0 Skip, 1 Timepass, 2 Go for it, 3 Perfection
 pub const POINTS_PER_MATCH: u32 = 10;
 pub const LEVEL_WEIGHTS: [u32; 4] = [100, 125, 150, 200]; // percent of a base vote
 pub const FINALIZE_GRACE_MS: u64 = 7 * 24 * 60 * 60 * 1000;
+pub const MAX_COMMENT_CHARS: usize = 280;
+// Only the newest comments per movie are kept, so storage (paid from the contract balance) stays bounded.
+pub const MAX_COMMENTS_PER_MOVIE: usize = 30;
 const BPS: u128 = 10_000;
 const SHARE_SCALE: u128 = 1_000_000_000;
 
@@ -175,6 +178,14 @@ pub struct MarketClaimPreview {
     pub claimed: bool,
 }
 
+#[near(serializers = [json, borsh])]
+#[derive(Clone)]
+pub struct Comment {
+    pub author: AccountId,
+    pub text: String,
+    pub ts_ms: U64,
+}
+
 #[derive(BorshStorageKey)]
 #[near(serializers = [borsh])]
 enum StorageKey {
@@ -189,6 +200,7 @@ enum StorageKey {
     Markets,
     Bets,
     DataPoints,
+    Comments,
 }
 
 #[near(contract_state)]
@@ -212,11 +224,12 @@ pub struct Contract {
     markets: LookupMap<u64, Market>,
     bets: LookupMap<String, Bet>,
     datapoints: LookupMap<u64, Vec<DataPoint>>,
+    comments: LookupMap<u64, Vec<Comment>>,
 }
 
-// Layout before box-office markets existed; read once by `migrate`.
+// Layout before comments existed; read once by `migrate`.
 #[near(serializers = [borsh])]
-pub struct ContractV3 {
+pub struct ContractV4 {
     owner: AccountId,
     min_stake: NearToken,
     next_movie_id: u64,
@@ -230,6 +243,11 @@ pub struct ContractV3 {
     level_step: u32,
     weights: LookupMap<String, u32>,
     wtotals: LookupMap<u64, [u128; BUCKETS]>,
+    resolver: AccountId,
+    next_market_id: u64,
+    markets: LookupMap<u64, Market>,
+    bets: LookupMap<String, Bet>,
+    datapoints: LookupMap<u64, Vec<DataPoint>>,
 }
 
 fn vote_key(movie_id: u64, account: &AccountId) -> String {
@@ -308,16 +326,16 @@ impl Contract {
             level_step: 15,
             weights: LookupMap::new(StorageKey::Weights),
             wtotals: LookupMap::new(StorageKey::WTotals),
+            comments: LookupMap::new(StorageKey::Comments),
         }
     }
 
     #[private]
     #[init(ignore_state)]
     pub fn migrate() -> Self {
-        let old: ContractV3 =
+        let old: ContractV4 =
             env::state_read().unwrap_or_else(|| env::panic_str("No state to migrate"));
         Self {
-            resolver: old.owner.clone(),
             owner: old.owner,
             min_stake: old.min_stake,
             next_movie_id: old.next_movie_id,
@@ -331,10 +349,12 @@ impl Contract {
             level_step: old.level_step,
             weights: old.weights,
             wtotals: old.wtotals,
-            next_market_id: 0,
-            markets: LookupMap::new(StorageKey::Markets),
-            bets: LookupMap::new(StorageKey::Bets),
-            datapoints: LookupMap::new(StorageKey::DataPoints),
+            resolver: old.resolver,
+            next_market_id: old.next_market_id,
+            markets: old.markets,
+            bets: old.bets,
+            datapoints: old.datapoints,
+            comments: LookupMap::new(StorageKey::Comments),
         }
     }
 
@@ -741,6 +761,41 @@ impl Contract {
 
     pub fn get_data_points(&self, movie_id: u64) -> Vec<DataPoint> {
         self.datapoints.get(&movie_id).cloned().unwrap_or_default()
+    }
+
+    // Anyone with a wallet can comment. Posting again replaces your earlier comment on that movie.
+    pub fn post_comment(&mut self, movie_id: u64, text: String) {
+        require!(self.movies.contains_key(&movie_id), "Movie not found");
+        let text = text.trim().to_string();
+        require!(!text.is_empty(), "Comment cannot be empty");
+        require!(text.chars().count() <= MAX_COMMENT_CHARS, "Comment is too long");
+
+        let author = env::predecessor_account_id();
+        let mut list = self.comments.get(&movie_id).cloned().unwrap_or_default();
+        list.retain(|c| c.author != author);
+        list.push(Comment { author, text, ts_ms: U64(env::block_timestamp_ms()) });
+        if list.len() > MAX_COMMENTS_PER_MOVIE {
+            list.remove(0);
+        }
+        self.comments.insert(movie_id, list);
+    }
+
+    pub fn get_comments(&self, movie_id: u64, from_index: Option<u64>, limit: Option<u64>) -> Vec<Comment> {
+        self.comments
+            .get(&movie_id)
+            .map(|list| {
+                list.iter()
+                    .rev()
+                    .skip(from_index.unwrap_or(0) as usize)
+                    .take(limit.unwrap_or(MAX_COMMENTS_PER_MOVIE as u64) as usize)
+                    .cloned()
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+
+    pub fn get_comment_count(&self, movie_id: u64) -> u64 {
+        self.comments.get(&movie_id).map(|l| l.len() as u64).unwrap_or(0)
     }
 
     pub fn get_config(&self) -> Config {
@@ -1820,6 +1875,101 @@ mod tests {
         as_user("anyone.near", OPEN_MS);
         let v = c.get_market(m).unwrap();
         assert_eq!((v.kind, v.movie_b, v.resolved_value_b.is_none()), (0, None, true));
+    }
+
+    fn comment_as(c: &mut Contract, who: &str, text: &str, ts_ms: u64) {
+        as_user(who, ts_ms);
+        c.post_comment(0, text.to_string());
+    }
+
+    #[test]
+    fn comments_are_listed_newest_first() {
+        let mut c = setup();
+        comment_as(&mut c, "alice.near", "Loved it", 1_000);
+        comment_as(&mut c, "bob.near", "Not for me", 2_000);
+        comment_as(&mut c, "carol.near", "Rewatching tonight", 3_000);
+
+        let all = c.get_comments(0, None, None);
+        assert_eq!(c.get_comment_count(0), 3);
+        assert_eq!(all[0].author.as_str(), "carol.near");
+        assert_eq!(all[2].author.as_str(), "alice.near");
+        assert_eq!(all[1].text, "Not for me");
+        assert_eq!(all[1].ts_ms.0, 2_000);
+
+        let page = c.get_comments(0, Some(1), Some(1));
+        assert_eq!(page.len(), 1);
+        assert_eq!(page[0].author.as_str(), "bob.near");
+    }
+
+    #[test]
+    fn posting_again_replaces_your_earlier_comment() {
+        let mut c = setup();
+        comment_as(&mut c, "alice.near", "First thoughts", 1_000);
+        comment_as(&mut c, "bob.near", "Agreed", 2_000);
+        comment_as(&mut c, "alice.near", "Changed my mind", 3_000);
+
+        let all = c.get_comments(0, None, None);
+        assert_eq!(c.get_comment_count(0), 2);
+        assert_eq!(all[0].author.as_str(), "alice.near");
+        assert_eq!(all[0].text, "Changed my mind");
+    }
+
+    #[test]
+    fn comment_text_is_trimmed_and_length_checked_in_characters() {
+        let mut c = setup();
+        comment_as(&mut c, "alice.near", "   spaced out   ", 1_000);
+        assert_eq!(c.get_comments(0, None, None)[0].text, "spaced out");
+
+        // 280 emoji are 280 characters even though they are far more bytes
+        comment_as(&mut c, "bob.near", &"🎬".repeat(MAX_COMMENT_CHARS), 2_000);
+        assert_eq!(c.get_comment_count(0), 2);
+    }
+
+    #[test]
+    #[should_panic(expected = "too long")]
+    fn comments_over_the_limit_are_rejected() {
+        let mut c = setup();
+        comment_as(&mut c, "alice.near", &"a".repeat(MAX_COMMENT_CHARS + 1), 1_000);
+    }
+
+    #[test]
+    #[should_panic(expected = "cannot be empty")]
+    fn blank_comments_are_rejected() {
+        let mut c = setup();
+        comment_as(&mut c, "alice.near", "   \n  ", 1_000);
+    }
+
+    #[test]
+    #[should_panic(expected = "Movie not found")]
+    fn comments_need_a_real_movie() {
+        let mut c = setup();
+        as_user("alice.near", 1_000);
+        c.post_comment(99, "Hello".to_string());
+    }
+
+    #[test]
+    fn only_the_newest_comments_are_kept() {
+        let mut c = setup();
+        for i in 0..(MAX_COMMENTS_PER_MOVIE + 5) {
+            comment_as(&mut c, &format!("user{i}.near"), &format!("comment {i}"), 1_000 + i as u64);
+        }
+        assert_eq!(c.get_comment_count(0), MAX_COMMENTS_PER_MOVIE as u64);
+        let all = c.get_comments(0, None, None);
+        assert_eq!(all[0].text, format!("comment {}", MAX_COMMENTS_PER_MOVIE + 4));
+        assert_eq!(all.last().unwrap().text, "comment 5");
+    }
+
+    #[test]
+    fn comments_are_kept_per_movie() {
+        let mut c = setup();
+        as_user("owner.near", OPEN_MS);
+        c.add_movie(2, "Coraline".into(), String::new(), U64(0), U64(END_MS));
+        comment_as(&mut c, "alice.near", "On movie zero", 1_000);
+        as_user("alice.near", 2_000);
+        c.post_comment(1, "On movie one".to_string());
+        assert_eq!(c.get_comments(0, None, None)[0].text, "On movie zero");
+        assert_eq!(c.get_comments(1, None, None)[0].text, "On movie one");
+        assert_eq!(c.get_comment_count(5), 0);
     }
 
     #[test]
