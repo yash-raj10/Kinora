@@ -9,7 +9,7 @@ const text = Instrument_Sans({ subsets: ['latin'], variable: '--font-text', disp
 
 export const metadata: Metadata = {
   title: 'Kinora',
-  description: 'Movie ratings backed by refundable NEAR stakes.',
+  description: 'Movie ratings and box-office calls backed by NEAR stakes.',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

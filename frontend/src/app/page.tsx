@@ -99,8 +99,8 @@ export default function Home() {
       <section className="container intro">
         <h1>Ratings that cost something to fake.</h1>
         <p>
-          Call a movie Skip, Timepass, Go for it or Perfection and back it with a refundable NEAR stake.
-          Bigger stakes move the Meter more, so a crowd can&apos;t be faked for free.
+          Call a movie Skip, Timepass, Go for it or Perfection and back it with a NEAR stake. Right calls
+          win a share of the wrong side&apos;s stakes, and seasoned voters count more, so a crowd can&apos;t be faked for free.
         </p>
       </section>
 
