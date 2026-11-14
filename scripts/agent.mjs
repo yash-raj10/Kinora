@@ -66,6 +66,7 @@ async function main() {
   const TMDB_KEY = process.env.TMDB_API_KEY;
   const OMDB_KEY = process.env.OMDB_API_KEY;
   const SAME_VALUE_COOLDOWN_MS = 24 * 3600 * 1000;
+  const REFRESH_MS = 6 * 3600 * 1000;
 
   if (!OMDB_KEY) {
     console.error('Set OMDB_API_KEY (free key from omdbapi.com/apikey.aspx). OMDb is the only box-office source.');
@@ -174,13 +175,18 @@ async function main() {
         const movie = await view('get_movie', { movie_id: movieId });
         const points = await view('get_data_points', { movie_id: movieId });
         const last = points[points.length - 1];
+        const mustPost = dueAfter.has(movieId) && (!last || Number(last.posted_at_ms) < dueAfter.get(movieId));
+        // Spare OMDb's daily request limit: a reading is only urgent when a market needs one to settle.
+        if (!mustPost && !FORCE && last && now - Number(last.posted_at_ms) < REFRESH_MS) {
+          log(`#${movieId} ${movie.title}: last reading is under ${REFRESH_MS / 3600000}h old, skipping OMDb`);
+          continue;
+        }
         const imdbId = await imdbIdFor(movie.tmdb_id);
         if (!imdbId) {
           log(`#${movieId} ${movie.title}: TMDB has no IMDb id, skipping`);
           continue;
         }
         const reading = await readOmdb(imdbId);
-        const mustPost = dueAfter.has(movieId) && (!last || Number(last.posted_at_ms) < dueAfter.get(movieId));
 
         if (reading.value === null) {
           log(`#${movieId} ${movie.title}: OMDb BoxOffice is ${JSON.stringify(reading.rawBoxOffice ?? null)}, skipping`);
