@@ -39,6 +39,14 @@ export type Vote = {
   claimed: boolean;
 };
 
+export type Comment = {
+  author: string;
+  text: string;
+  ts_ms: string;
+};
+
+export const MAX_COMMENT_CHARS = 280;
+
 export type Taste = {
   calls: number;
   matched: number;

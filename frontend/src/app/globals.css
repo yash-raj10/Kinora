@@ -278,3 +278,18 @@ img { display: block; max-width: 100%; }
 .vibe .vibe-list li { font-size: 1rem; }
 .vibe .vibe-list i { width: 12px; height: 12px; border-radius: 50%; }
 .vibe .vibe-list b { font-variant-numeric: tabular-nums; }
+
+/* comments */
+.comment-form { display: grid; gap: 10px; margin-bottom: 20px; }
+.comment-form textarea {
+  width: 100%; resize: vertical; min-height: 84px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font: inherit;
+}
+.comment-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.comments { display: grid; gap: 0; }
+.comment { padding: 14px 0; border-top: 1px solid var(--line); }
+.comment header { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin-bottom: 4px; }
+.comment header b { word-break: break-all; }
+.comment header span { color: var(--ink-3); font-size: 0.85rem; }
+.comment p { color: var(--ink-2); max-width: 62ch; white-space: pre-wrap; overflow-wrap: anywhere; }
+.comment-form > .btn { justify-self: start; }

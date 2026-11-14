@@ -24,6 +24,8 @@ import {
   type MarketView,
   type Movie,
   type MovieMeta,
+  MAX_COMMENT_CHARS,
+  type Comment,
   type Profile,
   type Vote,
 } from '@/lib/kinora';
@@ -42,6 +44,8 @@ export default function MoviePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [preview, setPreview] = useState<ClaimPreview | null>(null);
   const [markets, setMarkets] = useState<MarketView[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentText, setCommentText] = useState('');
   const [titles, setTitles] = useState<Record<number, string>>({});
   const [finalBucket, setFinalBucket] = useState<number | null>(null);
   const [settled, setSettled] = useState(false);
@@ -67,6 +71,13 @@ export default function MoviePage() {
       ]);
       setMarkets(allMarkets.filter((x) => x.movie_id === movieId || x.movie_b === movieId));
       setTitles(Object.fromEntries(allMovies.map((x) => [x.id, x.title])));
+      setComments(
+        (await viewFunction({
+          contractId: KinoraContract,
+          method: 'get_comments',
+          args: { movie_id: movieId, limit: 30 },
+        })) as Comment[],
+      );
       setMovie(m);
       setMeter(mt);
       setConfig(cfg);
@@ -110,11 +121,20 @@ export default function MoviePage() {
       await callFunction({ contractId: KinoraContract, method, args, deposit });
       setMessage(done);
       await refresh();
+      return true;
     } catch (e) {
       setError(e instanceof Error ? e.message : `${method} failed`);
+      return false;
     } finally {
       setBusy(false);
     }
+  };
+
+  const postComment = async () => {
+    const text = commentText.trim();
+    if (!text) return setError('Write a comment first.');
+    if ([...text].length > MAX_COMMENT_CHARS) return setError(`Comments can be up to ${MAX_COMMENT_CHARS} characters.`);
+    if (await runAction('post_comment', { movie_id: movieId, text }, 'Comment posted.')) setCommentText('');
   };
 
   const submitVote = () => {
@@ -251,6 +271,54 @@ export default function MoviePage() {
               <p className="note">Genre mix from TMDB, weighted toward the first-listed genres.</p>
             </section>
           )}
+
+          <section>
+            <h2>Comments{comments.length > 0 ? ` (${comments.length})` : ''}</h2>
+            {signedAccountId ? (
+              <div className="comment-form">
+                <textarea
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  placeholder="What did you think?"
+                  rows={3}
+                  aria-label="Your comment"
+                />
+                <div className="comment-bar">
+                  <span className="note">{[...commentText].length}/{MAX_COMMENT_CHARS}</span>
+                  <button className="btn btn-primary" disabled={busy} onClick={postComment}>
+                    {busy
+                      ? 'Waiting for wallet...'
+                      : comments.some((c) => c.author === signedAccountId)
+                        ? 'Update my comment'
+                        : 'Post comment'}
+                  </button>
+                </div>
+                <p className="note">
+                  Comments are saved on the NEAR blockchain. Posting again replaces your earlier comment on this movie.
+                </p>
+              </div>
+            ) : (
+              <div className="comment-form">
+                <p className="note">Connect a NEAR wallet to comment.</p>
+                <button className="btn btn-primary" onClick={() => void signIn()}>Connect wallet</button>
+              </div>
+            )}
+            {comments.length === 0 ? (
+              <p className="empty">No comments yet. Be the first.</p>
+            ) : (
+              <div className="comments">
+                {comments.map((c) => (
+                  <article className="comment" key={c.author}>
+                    <header>
+                      <b>{c.author}</b>
+                      <span>{shortDate(c.ts_ms)}</span>
+                    </header>
+                    <p>{c.text}</p>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
 
           {meta && (meta.overview || meta.cast.length > 0) && (
             <section>
