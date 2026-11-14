@@ -57,14 +57,15 @@ async function main() {
 
   const CONTRACT = opt('contract', process.env.KINORA_CONTRACT ?? 'kinora-yash-1114.testnet');
   // Scheduled runs set KEEPER_ACCOUNT and KEEPER_PRIVATE_KEY (kept as secrets); local runs use the near CLI keychain.
-  const KEEPER_KEY = process.env.KEEPER_PRIVATE_KEY;
+  // Secrets pasted into a settings page often carry a trailing line break, which the CLI rejects, so trim every key.
+  const KEEPER_KEY = process.env.KEEPER_PRIVATE_KEY?.trim() || undefined;
   const SIGNER = opt('signer', process.env.KINORA_SIGNER ?? process.env.KEEPER_ACCOUNT ?? CONTRACT);
   const RPC = process.env.NEAR_RPC ?? 'https://test.rpc.fastnear.com';
   const DRY = flag('dry-run');
   const FORCE = flag('force');
   const LOOP_SECONDS = Number(opt('loop', '0'));
-  const TMDB_KEY = process.env.TMDB_API_KEY;
-  const OMDB_KEY = process.env.OMDB_API_KEY;
+  const TMDB_KEY = process.env.TMDB_API_KEY?.trim();
+  const OMDB_KEY = process.env.OMDB_API_KEY?.trim();
   const SAME_VALUE_COOLDOWN_MS = 24 * 3600 * 1000;
   const REFRESH_MS = 6 * 3600 * 1000;
 
